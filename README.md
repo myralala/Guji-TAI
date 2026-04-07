@@ -17,13 +17,12 @@
 
   Instead of using one fixed explanation object for all tasks, Guji-TAI builds a task-aware target that matches the actual prediction unit of each task. This makes explanations easier to align, compare, and evaluate across different settings.
 
+
 ![Framework](figure/FIG1.png)
 
 *Figure 1. Overall Architecture of the Guji-TAI Task-Aware Interpretability Framework.*
 
-![Ablation](figure/FIG2.png)
 
-*Figure 2. Workspace Interface of the Guji-TAI Interpretability Platform.*
 
 ## ✨ Highlights
 
@@ -80,4 +79,8 @@ Start the web interface:
 cd GUI
 python flask_server.py
 ```
+![Ablation](figure/FIG2.png)
+
+*Figure 2. Workspace Interface of the Guji-TAI Interpretability Platform.*
+
 
