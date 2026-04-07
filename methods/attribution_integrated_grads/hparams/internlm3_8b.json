@@ -1,0 +1,5 @@
+{
+    "model_path": "/gemini/data-1/internlm3-8b-instruct",
+    "num_steps": 20,
+    "batch_size": 10
+}

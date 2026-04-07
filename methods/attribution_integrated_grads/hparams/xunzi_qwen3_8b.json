@@ -1,0 +1,5 @@
+{
+    "model_path": "/gemini/data-1/Xunzi-Qwen3-8B",
+    "num_steps": 20,
+    "batch_size": 4
+}

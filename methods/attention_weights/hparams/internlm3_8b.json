@@ -1,0 +1,4 @@
+{
+    "model_path": "/gemini/data-1/internlm3-8b-instruct",
+    "num_heads": 5
+}

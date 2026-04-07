@@ -1,0 +1,6 @@
+{
+    "model_path": "/gemini/data-1/internlm3-8b-instruct",
+    "replace": false,
+    "window": 10,
+    "noise_level": "s3"
+}

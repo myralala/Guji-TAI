@@ -1,0 +1,6 @@
+{
+    "Qwen/Qwen3-8B": "/gemini/data-1/Qwen3-8B",
+    "Qwen/Qwen3-32B": "/gemini/data-1/Qwen3-32B",
+    "Xunzi/Xunzi-Qwen3-8B": "/gemini/data-1/Xunzi-Qwen3-8B",
+    "internlm/internlm3-8b-instruct": "/gemini/data-1/internlm3-8b-instruct"
+}
