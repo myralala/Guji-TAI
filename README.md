@@ -13,9 +13,9 @@
 
 </div>
 
-Guji-TAI is a task-aware interpretability framework for ancient Chinese NLP. It is designed for heterogeneous tasks such as punctuation restoration, missing character completion, question answering, translation, relation extraction, and knowledge reasoning.
+  Guji-TAI is a task-aware interpretability framework for ancient Chinese NLP. It is designed for heterogeneous tasks such as punctuation restoration, missing character completion, question answering, translation, relation extraction, and knowledge reasoning.
 
-Instead of using one fixed explanation object for all tasks, Guji-TAI builds a task-aware target that matches the actual prediction unit of each task. This makes explanations easier to align, compare, and evaluate across different settings.
+  Instead of using one fixed explanation object for all tasks, Guji-TAI builds a task-aware target that matches the actual prediction unit of each task. This makes explanations easier to align, compare, and evaluate across different settings.
 
 ![Framework](figure/FIG1.png)
 
