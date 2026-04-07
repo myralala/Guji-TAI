@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./Guji-TAI.png" />
+    <title>Guji-TAI Workspace</title>
+    <style>
+      :root {
+        --paper: #f8f1e3;
+        --paper-soft: #efe3c8;
+        --paper-deep: #e6d2ab;
+        --paper-wash: #fbf7ef;
+        --panel: rgba(251, 247, 239, 0.86);
+        --panel-strong: rgba(244, 237, 224, 0.94);
+        --line: #ccb58d;
+        --line-strong: #8f693b;
+        --ink: #2f261d;
+        --muted: #71604d;
+        --green: #2f5d4f;
+        --green-soft: #d8e2d4;
+        --green-strong: #21483c;
+        --gold: #996a3b;
+        --cinnabar: #9d5638;
+        --cinnabar-soft: rgba(157, 86, 56, 0.12);
+        --shadow: 0 22px 44px rgba(86, 58, 26, 0.12);
+        --radius-xl: 28px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          radial-gradient(circle at top left, rgba(153, 106, 59, 0.22), transparent 22%),
+          radial-gradient(circle at right 18%, rgba(47, 93, 79, 0.08), transparent 24%),
+          linear-gradient(180deg, #f9f4ea 0%, #f0e4cb 48%, #ebdbc0 100%);
+        color: var(--ink);
+        font-family: "STSong", "Songti SC", "Noto Serif SC", serif;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(143, 105, 59, 0.045) 0, rgba(143, 105, 59, 0.045) 1px, transparent 1px, transparent 54px),
+          linear-gradient(rgba(255, 249, 240, 0.34), rgba(255, 249, 240, 0.34));
+        opacity: 0.58;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 20% 16%, rgba(255, 255, 255, 0.35), transparent 18%),
+          radial-gradient(circle at 82% 18%, rgba(47, 93, 79, 0.08), transparent 20%),
+          radial-gradient(circle at 78% 82%, rgba(157, 86, 56, 0.08), transparent 18%);
+        opacity: 0.9;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .page-shell {
+        position: relative;
+        z-index: 1;
+        width: min(1520px, calc(100vw - 36px));
+        margin: 28px auto 28px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .hero-bar,
+      .task-shelf,
+      .control-plane,
+      .result-deck {
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(251, 247, 239, 0.95) 0%, rgba(239, 227, 200, 0.88) 100%);
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .hero-bar::before,
+      .task-shelf::before,
+      .control-plane::before,
+      .result-deck::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(120deg, rgba(255, 255, 255, 0.35), transparent 36%),
+          radial-gradient(circle at top right, rgba(47, 93, 79, 0.08), transparent 18%);
+        opacity: 0.9;
+      }
+
+      .hero-bar {
+        display: grid;
+        grid-template-columns: minmax(260px, 340px) minmax(0, 1fr) 300px;
+        align-items: center;
+        gap: 18px;
+        padding: 22px 24px;
+      }
+
+      .brand-lockup {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand-plaque {
+        position: relative;
+        width: 100%;
+        padding: 14px 18px 12px;
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(248, 241, 225, 0.98) 0%, rgba(235, 223, 198, 0.94) 100%),
+          repeating-linear-gradient(90deg, rgba(143, 105, 59, 0.04) 0, rgba(143, 105, 59, 0.04) 1px, transparent 1px, transparent 44px);
+        border: 1px solid rgba(143, 105, 59, 0.22);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.6),
+          0 16px 34px rgba(86, 58, 26, 0.11);
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .brand-plaque::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 12% 50%, rgba(47, 93, 79, 0.1), transparent 20%),
+          radial-gradient(circle at 88% 18%, rgba(157, 86, 56, 0.09), transparent 18%);
+        pointer-events: none;
+      }
+
+      .brand-logo {
+        width: 320px;
+        max-width: 100%;
+        height: 86px;
+        object-fit: contain;
+        object-position: left center;
+        position: relative;
+        z-index: 1;
+        mix-blend-mode: multiply;
+        filter: saturate(0.92) contrast(1.06) drop-shadow(0 10px 18px rgba(33, 72, 60, 0.1));
+      }
+
+      .hero-copy {
+        display: grid;
+        gap: 8px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-copy h1 {
+        margin: 0;
+        font-size: 1.9rem;
+        letter-spacing: 0.08em;
+        color: var(--green);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+      }
+
+      .hero-copy p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 720px;
+        font-size: 1.03rem;
+        font-weight: 500;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 14px 16px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.92) 0%, rgba(241, 232, 212, 0.88) 100%);
+        border: 1px solid rgba(204, 181, 141, 0.88);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+
+      .stat-card span {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .stat-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.05rem;
+        color: var(--ink);
+      }
+
+      .status-panel {
+        padding: 16px 18px;
+        border-radius: var(--radius-lg);
+        background:
+          linear-gradient(180deg, rgba(233, 240, 232, 0.76) 0%, rgba(247, 242, 231, 0.92) 100%);
+        border: 1px solid rgba(173, 183, 164, 0.72);
+        display: grid;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .lang-switch {
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        z-index: 5;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 999px;
+        border: 1px solid rgba(143, 105, 59, 0.18);
+        background: rgba(249, 244, 234, 0.96);
+        box-shadow: 0 12px 24px rgba(86, 58, 26, 0.1);
+      }
+
+      .lang-switch button {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 8px 14px;
+        min-width: 62px;
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+      }
+
+      .lang-switch button:hover {
+        transform: translateY(-1px);
+      }
+
+      .lang-switch button.active {
+        background: linear-gradient(135deg, var(--green) 0%, #46694f 100%);
+        color: #fff;
+        box-shadow: 0 10px 18px rgba(47, 93, 79, 0.18);
+      }
+
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .status-row span {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(47, 93, 79, 0.12);
+        color: var(--green-strong);
+        font-size: 0.92rem;
+      }
+
+      .status-chip::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: currentColor;
+      }
+
+      .task-shelf {
+        padding: 18px 20px 20px;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        color: var(--green);
+        font-size: 1.28rem;
+        letter-spacing: 0.05em;
+      }
+
+      .section-heading p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.75;
+      }
+
+      .task-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .task-card {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.92) 0%, rgba(246, 237, 221, 0.84) 100%);
+        border-radius: 18px;
+        padding: 16px;
+        cursor: pointer;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .task-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(180, 141, 92, 0.92);
+        box-shadow: 0 12px 28px rgba(69, 50, 25, 0.1);
+      }
+
+      .task-card.active {
+        background:
+          linear-gradient(180deg, rgba(220, 230, 216, 0.96) 0%, rgba(242, 238, 224, 0.96) 100%);
+        border-color: rgba(47, 93, 79, 0.58);
+        box-shadow: 0 16px 30px rgba(47, 93, 79, 0.12);
+      }
+
+      .task-card strong {
+        display: block;
+        line-height: 1.45;
+        font-size: 1rem;
+        color: var(--ink);
+      }
+
+      .task-card span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 0.92rem;
+      }
+
+      .control-plane {
+        padding: 18px 20px 20px;
+        display: grid;
+        grid-template-columns: 350px minmax(0, 1fr) 300px;
+        gap: 16px;
+      }
+
+      .panel {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: var(--radius-lg);
+        background:
+          linear-gradient(180deg, rgba(255, 251, 244, 0.9) 0%, rgba(243, 235, 220, 0.84) 100%);
+        box-shadow: 0 10px 24px rgba(69, 50, 25, 0.07);
+        min-height: 0;
+      }
+
+      .panel-head {
+        padding: 16px 18px 0;
+      }
+
+      .panel-head h3 {
+        margin: 0;
+        color: var(--green);
+        font-size: 1.14rem;
+        letter-spacing: 0.03em;
+      }
+
+      .panel-head p {
+        margin: 6px 0 0;
+        color: #5d4d3d;
+        font-size: 1.02rem;
+        font-weight: 500;
+        line-height: 1.75;
+      }
+
+      .panel-body {
+        padding: 16px 18px 18px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 0.92rem;
+        color: var(--gold);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        border: 1px solid rgba(204, 181, 141, 0.95);
+        background: rgba(255, 251, 244, 0.96);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: var(--ink);
+        outline: none;
+      }
+
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: var(--line-strong);
+        box-shadow: 0 0 0 3px rgba(180, 141, 92, 0.12);
+      }
+
+      .field textarea {
+        min-height: 130px;
+        resize: vertical;
+        line-height: 1.7;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-primary {
+        color: #fff;
+        background: linear-gradient(135deg, #28594b 0%, #57704b 100%);
+        box-shadow: 0 12px 24px rgba(40, 89, 75, 0.24);
+      }
+
+      .btn-secondary {
+        color: var(--green-strong);
+        background: linear-gradient(180deg, rgba(222, 235, 226, 0.94) 0%, rgba(205, 220, 200, 0.92) 100%);
+        border: 1px solid rgba(47, 93, 79, 0.2);
+      }
+
+      .btn-ghost {
+        color: var(--cinnabar);
+        background: linear-gradient(180deg, rgba(255, 247, 236, 0.96) 0%, rgba(247, 230, 215, 0.9) 100%);
+        border: 1px solid rgba(157, 86, 56, 0.16);
+      }
+
+      .sample-shell {
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+        gap: 14px;
+        min-height: 720px;
+      }
+
+      .sample-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .sample-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .meta-box {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.94) 0%, rgba(243, 235, 220, 0.9) 100%);
+        padding: 12px 14px;
+      }
+
+      .meta-box span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .meta-box strong,
+      .meta-box pre {
+        display: block;
+        margin: 8px 0 0;
+        color: var(--ink);
+        font-size: 0.96rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: inherit;
+      }
+
+      .prompt-stage {
+        display: grid;
+        grid-template-rows: auto auto;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .prompt-display,
+      .trace-log {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        background: rgba(255, 250, 243, 0.94);
+        border-radius: 18px;
+        padding: 14px 16px;
+      }
+
+      .prompt-display {
+        min-height: 250px;
+        white-space: pre-wrap;
+        line-height: 1.8;
+        overflow: auto;
+      }
+
+      .sample-list {
+        display: grid;
+        gap: 10px;
+        max-height: 220px;
+        overflow: auto;
+      }
+
+      .sample-card {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.94) 0%, rgba(243, 235, 220, 0.88) 100%);
+        border-radius: 16px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .sample-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(180, 141, 92, 0.92);
+        box-shadow: 0 10px 20px rgba(69, 50, 25, 0.08);
+      }
+
+      .sample-card.active {
+        background: linear-gradient(180deg, rgba(220, 230, 216, 0.96) 0%, rgba(242, 238, 224, 0.96) 100%);
+        border-color: rgba(47, 93, 79, 0.56);
+      }
+
+      .sample-card strong {
+        display: block;
+        color: var(--green-strong);
+        font-size: 0.92rem;
+        margin-bottom: 6px;
+      }
+
+      .sample-card span {
+        display: block;
+        color: var(--ink);
+        line-height: 1.6;
+        font-size: 0.92rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .trace-log {
+        display: grid;
+        gap: 10px;
+        max-height: 320px;
+        overflow: auto;
+      }
+
+      .trace-line {
+        font-size: 0.92rem;
+        color: var(--muted);
+        padding-bottom: 10px;
+        border-bottom: 1px dashed rgba(217, 199, 167, 0.72);
+      }
+
+      .trace-line strong {
+        color: var(--ink);
+      }
+
+      .method-tree {
+        display: grid;
+        gap: 10px;
+        max-height: 380px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .method-group,
+      .method-branch {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: 16px;
+        background: rgba(255, 251, 244, 0.92);
+      }
+
+      .method-group > summary,
+      .method-branch > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 12px 14px;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .method-group > summary::-webkit-details-marker,
+      .method-branch > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .method-list {
+        display: grid;
+        gap: 8px;
+        padding: 0 14px 14px;
+      }
+
+      .method-option {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 251, 244, 0.9);
+        border: 1px solid rgba(204, 181, 141, 0.8);
+      }
+
+      .method-option input {
+        margin-top: 3px;
+      }
+
+      .method-option span {
+        line-height: 1.5;
+      }
+
+      .selected-methods {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .method-pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(222, 235, 226, 0.92) 0%, rgba(207, 221, 201, 0.9) 100%);
+        color: var(--green-strong);
+        font-size: 0.88rem;
+      }
+
+      .result-deck {
+        padding: 18px 20px 20px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .result-overview {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.94) 0%, rgba(243, 235, 220, 0.9) 100%);
+        padding: 18px;
+      }
+
+      .result-overview pre {
+        margin: 10px 0 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.75;
+        color: var(--ink);
+        font-family: inherit;
+      }
+
+      .result-columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .result-column {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.92) 0%, rgba(243, 235, 220, 0.88) 100%);
+        padding: 16px;
+        min-height: 260px;
+      }
+
+      .result-column h3 {
+        margin: 0 0 12px;
+        color: var(--green);
+        font-size: 1.1rem;
+      }
+
+      .category-block {
+        border-top: 1px dashed rgba(217, 199, 167, 0.88);
+        padding-top: 12px;
+        margin-top: 12px;
+      }
+
+      .category-block:first-of-type {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+
+      .category-block h4 {
+        margin: 0 0 10px;
+        color: var(--cinnabar);
+        font-size: 1rem;
+      }
+
+      .method-card {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 251, 244, 0.9) 0%, rgba(243, 235, 220, 0.86) 100%);
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+
+      .method-card > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .method-card > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .method-card-body {
+        padding: 0 16px 16px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .method-text,
+      .method-note,
+      .method-res {
+        border-radius: 14px;
+        padding: 12px 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .method-text {
+        background: rgba(255, 250, 243, 0.94);
+        border: 1px solid rgba(204, 181, 141, 0.92);
+      }
+
+      .method-note,
+      .method-res {
+        background: rgba(216, 226, 212, 0.56);
+        color: var(--green-strong);
+      }
+
+      .img-block img {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        background: rgba(255, 251, 244, 0.94);
+      }
+
+      .data-table-wrap {
+        overflow: auto;
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: 16px;
+        background: rgba(255, 250, 243, 0.94);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 480px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid rgba(217, 199, 167, 0.72);
+        padding: 10px 12px;
+        vertical-align: top;
+        text-align: left;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      th {
+        background: rgba(239, 227, 200, 0.9);
+        color: var(--gold);
+      }
+
+      .chart-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .chart-block {
+        border: 1px solid rgba(204, 181, 141, 0.92);
+        border-radius: 16px;
+        background: rgba(255, 250, 243, 0.94);
+        padding: 14px;
+      }
+
+      .chart-title {
+        margin: 0 0 10px;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .plot-box {
+        width: 100%;
+        min-height: 280px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #fcf7ef 0%, #efe4cb 100%);
+        border: 1px solid rgba(204, 181, 141, 0.84);
+        overflow: auto;
+      }
+
+      .plot-svg {
+        width: 100%;
+        height: 320px;
+        display: block;
+      }
+
+      .heatmap-grid {
+        display: grid;
+        grid-auto-rows: 12px;
+        gap: 1px;
+        padding: 12px;
+        min-width: fit-content;
+      }
+
+      .heatmap-cell {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+      }
+
+      .empty-state {
+        display: grid;
+        place-items: center;
+        min-height: 260px;
+        border: 1px dashed rgba(204, 181, 141, 0.92);
+        border-radius: 20px;
+        color: var(--muted);
+        background: rgba(255, 250, 243, 0.68);
+      }
+
+      .inline-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.96rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: linear-gradient(180deg, rgba(157, 86, 56, 0.12) 0%, rgba(153, 106, 59, 0.08) 100%);
+        color: var(--cinnabar);
+        border: 1px solid rgba(157, 86, 56, 0.08);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 1280px) {
+        .hero-bar,
+        .control-plane {
+          grid-template-columns: 1fr;
+        }
+
+        .result-columns {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .page-shell {
+          width: calc(100vw - 20px);
+          margin: 10px auto 18px;
+          gap: 12px;
+        }
+
+        .task-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .sample-meta {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="lang-switch" id="languageSwitch" aria-label="Language switch">
+        <button type="button" id="langEnBtn" data-lang="en" class="active">EN</button>
+        <button type="button" id="langZhBtn" data-lang="zh">中文</button>
+      </div>
+      <section class="hero-bar">
+        <div class="brand-lockup">
+          <div class="brand-plaque">
+            <img class="brand-logo" src="./Guji-TAI.png" alt="Guji-TAI" />
+          </div>
+        </div>
+        <div class="hero-copy">
+          <div class="inline-badge" id="heroBadge">Guji Interpretation Studio</div>
+          <h1 id="heroTitle">Intelligent Interpretation of Ancient Chinese Texts</h1>
+          <p id="heroDescription">A redesigned workspace that separates task selection, model setup, sample review, and diagnosis results into clear workflow panels while preserving the existing Flask backend behavior.</p>
+          <div class="hero-stats">
+            <div class="stat-card">
+              <span id="datasetModeLabel">Dataset Mode</span>
+              <strong id="heroDataset">Custom Input</strong>
+            </div>
+            <div class="stat-card">
+              <span id="modelRouteLabel">Model Route</span>
+              <strong id="heroModel">Not Selected</strong>
+            </div>
+            <div class="stat-card">
+              <span id="selectedMethodsLabel">Selected Methods</span>
+              <strong id="heroMethods">0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="status-panel">
+          <div class="status-row">
+            <span id="workspaceStatusLabel">Workspace Status</span>
+            <div class="status-chip" id="statusChip">Ready</div>
+          </div>
+          <div class="status-row">
+            <span id="currentSampleLabel">Current Sample</span>
+            <strong id="statusSample">No prompt selected</strong>
+          </div>
+          <div class="status-row">
+            <span id="lastActionLabel">Last Action</span>
+            <strong id="statusAction">Waiting</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="task-shelf">
+        <div class="section-heading">
+          <div>
+            <h2 id="taskLibraryTitle">Task Library</h2>
+            <p id="taskLibraryDescription">Select a task first, then work with dataset samples or custom input within the same workflow context.</p>
+          </div>
+          <div class="inline-badge" id="taskShelfCount">0 tasks</div>
+        </div>
+        <div class="task-grid" id="taskGrid"></div>
+      </section>
+
+      <section class="control-plane">
+        <aside class="panel">
+          <div class="panel-head">
+            <h3 id="configurationTitle">Configuration</h3>
+            <p id="configurationDescription">Keep model loading, path selection, and method setup in one focused control panel.</p>
+          </div>
+          <div class="panel-body stack">
+            <div class="field">
+              <label for="modelTypeSelect" id="modelTypeFieldLabel">Model Type</label>
+              <select id="modelTypeSelect"></select>
+            </div>
+            <div class="field">
+              <label for="modelPathInput" id="modelPathFieldLabel">Model Path</label>
+              <input id="modelPathInput" list="modelPathOptions" placeholder="Please input path" />
+              <datalist id="modelPathOptions"></datalist>
+            </div>
+            <div class="button-row">
+              <button class="btn btn-secondary" id="loadModelBtn">Load Model</button>
+              <button class="btn btn-ghost" id="refreshMethodsBtn">Refresh Methods</button>
+            </div>
+            <div class="field">
+              <label id="methodSelectionLabel">Method Selection</label>
+              <div class="method-tree" id="methodTree"></div>
+            </div>
+            <div class="field">
+              <label id="selectedMethodQueueLabel">Selected Method Queue</label>
+              <div class="selected-methods" id="selectedMethods"></div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel sample-shell">
+          <div class="panel-head">
+            <h3 id="sampleWorkspaceTitle">Sample Workspace</h3>
+            <p id="sampleWorkspaceDescription">Use this area to enter questions, switch sample records, inspect prompts, and launch diagnosis.</p>
+          </div>
+          <div class="panel-body stack">
+            <div class="field" id="customInputField">
+              <label for="customQuestionInput" id="customQuestionLabel">Custom Question</label>
+              <textarea id="customQuestionInput" placeholder="Please enter your question"></textarea>
+            </div>
+            <div class="sample-toolbar">
+              <button class="btn btn-secondary" id="searchBtn">Search</button>
+              <button class="btn btn-ghost" id="randomBtn">Random Sample</button>
+              <button class="btn btn-primary" id="diagnoseBtn">Diagnose</button>
+            </div>
+            <div class="sample-meta">
+              <div class="meta-box">
+                <span id="datasetMetaLabel">Dataset</span>
+                <strong id="metaDataset">Custom Input</strong>
+              </div>
+              <div class="meta-box">
+                <span id="groundTruthLabel">Ground Truth</span>
+                <pre id="metaGroundTruth">-</pre>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="field">
+              <label id="availableSamplesLabel">Available Samples</label>
+              <div class="sample-list" id="sampleList"></div>
+            </div>
+          </div>
+          <div class="panel-body prompt-stage">
+            <div class="prompt-display" id="promptDisplay">No prompt selected.</div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <h3 id="runMonitorTitle">Run Monitor</h3>
+            <p id="runMonitorDescription">Track the active session, backend streaming state, and recent actions in one place.</p>
+          </div>
+          <div class="panel-body stack">
+            <div class="meta-box">
+              <span id="sessionSummaryLabel">Session Summary</span>
+              <pre id="sessionSummary">Waiting for initialization...</pre>
+            </div>
+            <div class="meta-box">
+              <span id="liveOutputSnapshotLabel">Live Output Snapshot</span>
+              <pre id="resultSnapshot">No result yet.</pre>
+            </div>
+            <div class="trace-log" id="traceLog"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="result-deck">
+        <div class="section-heading">
+          <div>
+            <h2 id="diagnosisBoardTitle">Diagnosis Board</h2>
+            <p id="diagnosisBoardDescription">The result area uses a two-column reading layout with model output pinned above the external and internal interpretation sections.</p>
+          </div>
+          <div class="inline-badge" id="resultBadge">No result</div>
+        </div>
+        <div class="result-overview">
+          <strong id="modelOutputLabel">Model Output</strong>
+          <pre id="modelOutput">Run a diagnosis to populate the result board.</pre>
+        </div>
+        <div id="resultContainer"></div>
+      </section>
+    </div>
+
+    <script>
+      const state = {
+        datasetList: [],
+        datasetMode: "USEREDITINPUT",
+        selectedDataset: "",
+        selectedDatasetLabel: "Custom Input",
+        uiLanguage: "en",
+        modelConfigList: [],
+        modelPathList: [],
+        selectedModelType: "",
+        selectedModelPath: "",
+        methodTree: [],
+        selectedMethods: [],
+        customQuestion: "What is the capital of China?",
+        promptOptions: [],
+        inputObjectList: [],
+        selectedPrompt: "",
+        inputObject: {},
+        result: {},
+        trace: [],
+        status: "Ready",
+      };
+
+      const elements = {
+        languageSwitch: document.getElementById("languageSwitch"),
+        langEnBtn: document.getElementById("langEnBtn"),
+        langZhBtn: document.getElementById("langZhBtn"),
+        taskGrid: document.getElementById("taskGrid"),
+        taskShelfCount: document.getElementById("taskShelfCount"),
+        modelTypeSelect: document.getElementById("modelTypeSelect"),
+        modelPathInput: document.getElementById("modelPathInput"),
+        modelPathOptions: document.getElementById("modelPathOptions"),
+        methodTree: document.getElementById("methodTree"),
+        selectedMethods: document.getElementById("selectedMethods"),
+        customInputField: document.getElementById("customInputField"),
+        customQuestionInput: document.getElementById("customQuestionInput"),
+        sampleList: document.getElementById("sampleList"),
+        searchBtn: document.getElementById("searchBtn"),
+        randomBtn: document.getElementById("randomBtn"),
+        diagnoseBtn: document.getElementById("diagnoseBtn"),
+        loadModelBtn: document.getElementById("loadModelBtn"),
+        refreshMethodsBtn: document.getElementById("refreshMethodsBtn"),
+        metaDataset: document.getElementById("metaDataset"),
+        metaGroundTruth: document.getElementById("metaGroundTruth"),
+        promptDisplay: document.getElementById("promptDisplay"),
+        traceLog: document.getElementById("traceLog"),
+        sessionSummary: document.getElementById("sessionSummary"),
+        resultSnapshot: document.getElementById("resultSnapshot"),
+        heroDataset: document.getElementById("heroDataset"),
+        heroModel: document.getElementById("heroModel"),
+        heroMethods: document.getElementById("heroMethods"),
+        statusChip: document.getElementById("statusChip"),
+        statusSample: document.getElementById("statusSample"),
+        statusAction: document.getElementById("statusAction"),
+        modelOutput: document.getElementById("modelOutput"),
+        resultContainer: document.getElementById("resultContainer"),
+        resultBadge: document.getElementById("resultBadge"),
+        heroBadge: document.getElementById("heroBadge"),
+        heroTitle: document.getElementById("heroTitle"),
+        heroDescription: document.getElementById("heroDescription"),
+        datasetModeLabel: document.getElementById("datasetModeLabel"),
+        modelRouteLabel: document.getElementById("modelRouteLabel"),
+        selectedMethodsLabel: document.getElementById("selectedMethodsLabel"),
+        workspaceStatusLabel: document.getElementById("workspaceStatusLabel"),
+        currentSampleLabel: document.getElementById("currentSampleLabel"),
+        lastActionLabel: document.getElementById("lastActionLabel"),
+        taskLibraryTitle: document.getElementById("taskLibraryTitle"),
+        taskLibraryDescription: document.getElementById("taskLibraryDescription"),
+        configurationTitle: document.getElementById("configurationTitle"),
+        configurationDescription: document.getElementById("configurationDescription"),
+        modelTypeFieldLabel: document.getElementById("modelTypeFieldLabel"),
+        modelPathFieldLabel: document.getElementById("modelPathFieldLabel"),
+        methodSelectionLabel: document.getElementById("methodSelectionLabel"),
+        selectedMethodQueueLabel: document.getElementById("selectedMethodQueueLabel"),
+        sampleWorkspaceTitle: document.getElementById("sampleWorkspaceTitle"),
+        sampleWorkspaceDescription: document.getElementById("sampleWorkspaceDescription"),
+        customQuestionLabel: document.getElementById("customQuestionLabel"),
+        datasetMetaLabel: document.getElementById("datasetMetaLabel"),
+        groundTruthLabel: document.getElementById("groundTruthLabel"),
+        availableSamplesLabel: document.getElementById("availableSamplesLabel"),
+        runMonitorTitle: document.getElementById("runMonitorTitle"),
+        runMonitorDescription: document.getElementById("runMonitorDescription"),
+        sessionSummaryLabel: document.getElementById("sessionSummaryLabel"),
+        liveOutputSnapshotLabel: document.getElementById("liveOutputSnapshotLabel"),
+        diagnosisBoardTitle: document.getElementById("diagnosisBoardTitle"),
+        diagnosisBoardDescription: document.getElementById("diagnosisBoardDescription"),
+        modelOutputLabel: document.getElementById("modelOutputLabel"),
+      };
+
+      const translations = {
+        en: {
+          heroBadge: "Guji Interpretation Studio",
+          heroTitle: "Intelligent Interpretation of Ancient Chinese Texts",
+          heroDescription:
+            "A redesigned workspace that separates task selection, model setup, sample review, and diagnosis results into clear workflow panels while preserving the existing Flask backend behavior.",
+          datasetModeLabel: "Dataset Mode",
+          modelRouteLabel: "Model Route",
+          selectedMethodsLabel: "Selected Methods",
+          notSelected: "Not Selected",
+          workspaceStatusLabel: "Workspace Status",
+          currentSampleLabel: "Current Sample",
+          lastActionLabel: "Last Action",
+          taskLibraryTitle: "Task Library",
+          taskLibraryDescription:
+            "Select a task first, then work with dataset samples or custom input within the same workflow context.",
+          configurationTitle: "Configuration",
+          configurationDescription:
+            "Keep model loading, path selection, and method setup in one focused control panel.",
+          modelTypeFieldLabel: "Model Type",
+          modelPathFieldLabel: "Model Path",
+          modelPathPlaceholder: "Please input path",
+          methodSelectionLabel: "Method Selection",
+          selectedMethodQueueLabel: "Selected Method Queue",
+          loadModelBtn: "Load Model",
+          refreshMethodsBtn: "Refresh Methods",
+          sampleWorkspaceTitle: "Sample Workspace",
+          sampleWorkspaceDescription:
+            "Use this area to enter questions, switch sample records, inspect prompts, and launch diagnosis.",
+          customQuestionLabel: "Custom Question",
+          customQuestionPlaceholder: "Please enter your question",
+          searchBtnCustom: "Search Candidates",
+          searchBtnDataset: "Refresh Sample",
+          randomBtn: "Random Sample",
+          diagnoseBtn: "Diagnose",
+          datasetMetaLabel: "Dataset",
+          groundTruthLabel: "Ground Truth",
+          availableSamplesLabel: "Available Samples",
+          runMonitorTitle: "Run Monitor",
+          runMonitorDescription:
+            "Track the active session, backend streaming state, and recent actions in one place.",
+          sessionSummaryLabel: "Session Summary",
+          liveOutputSnapshotLabel: "Live Output Snapshot",
+          diagnosisBoardTitle: "Diagnosis Board",
+          diagnosisBoardDescription:
+            "The result area uses a two-column reading layout with model output pinned above the external and internal interpretation sections.",
+          modelOutputLabel: "Model Output",
+          noPromptSelected: "No prompt selected.",
+          noPromptSelectedShort: "No prompt selected",
+          noSamplesAvailable: "No samples available for the current selection.",
+          noMethodSelected: "No method selected",
+          noTaskSample: "Select a task sample first.",
+          noMethodsAvailable: "No methods available for the current dataset/model pair.",
+          workspaceInitialized: "Workspace initialized.",
+          modelOutputPlaceholder: "Run a diagnosis to populate the result board.",
+          diagnosisDetailsPlaceholder: "Diagnosis details will appear here after streaming starts.",
+          noResult: "No result",
+          externalEvidence: "External Evidence",
+          internalMechanism: "Internal Mechanism",
+          noRootResultYet: "No {root} result yet.",
+          sampleLabel: "Sample",
+          customInput: "Custom Input",
+        },
+        zh: {
+          heroBadge: "古籍解读工作台",
+          heroTitle: "古籍智能解读工作台",
+          heroDescription:
+            "这个页面将任务选择、模型配置、样本查看和诊断结果拆分成清晰的工作流区域，同时保持现有 Flask 后端功能不变。",
+          datasetModeLabel: "数据模式",
+          modelRouteLabel: "模型路径",
+          selectedMethodsLabel: "已选方法",
+          notSelected: "未选择",
+          workspaceStatusLabel: "工作台状态",
+          currentSampleLabel: "当前样本",
+          lastActionLabel: "最近操作",
+          taskLibraryTitle: "任务库",
+          taskLibraryDescription: "先选择任务，再在同一工作流中使用数据集样本或自定义输入。",
+          configurationTitle: "配置区",
+          configurationDescription: "在一个集中面板中完成模型加载、路径设置和方法配置。",
+          modelTypeFieldLabel: "模型类型",
+          modelPathFieldLabel: "模型路径",
+          modelPathPlaceholder: "请输入模型路径",
+          methodSelectionLabel: "方法选择",
+          selectedMethodQueueLabel: "已选方法队列",
+          loadModelBtn: "加载模型",
+          refreshMethodsBtn: "刷新方法",
+          sampleWorkspaceTitle: "样本工作区",
+          sampleWorkspaceDescription: "在这里输入问题、切换样本、查看 prompt，并启动诊断。",
+          customQuestionLabel: "自定义问题",
+          customQuestionPlaceholder: "请输入你的问题",
+          searchBtnCustom: "检索候选样本",
+          searchBtnDataset: "刷新样本",
+          randomBtn: "随机样本",
+          diagnoseBtn: "开始诊断",
+          datasetMetaLabel: "数据集",
+          groundTruthLabel: "标准答案",
+          availableSamplesLabel: "可用样本",
+          runMonitorTitle: "运行监视区",
+          runMonitorDescription: "在这里跟踪当前会话、后端流式状态和最近操作。",
+          sessionSummaryLabel: "会话摘要",
+          liveOutputSnapshotLabel: "即时输出快照",
+          diagnosisBoardTitle: "诊断结果板",
+          diagnosisBoardDescription: "结果区采用双栏阅读布局，模型输出置顶，外部和内部解释分别展开。",
+          modelOutputLabel: "模型输出",
+          noPromptSelected: "当前没有选中的样本。",
+          noPromptSelectedShort: "当前没有选中的样本",
+          noSamplesAvailable: "当前选择下没有可用样本。",
+          noMethodSelected: "当前没有选择方法",
+          noTaskSample: "请先选择一个任务样本。",
+          noMethodsAvailable: "当前数据集与模型组合下没有可用方法。",
+          workspaceInitialized: "工作台已初始化。",
+          modelOutputPlaceholder: "运行诊断后，这里会显示模型输出。",
+          diagnosisDetailsPlaceholder: "开始流式诊断后，详细结果会显示在这里。",
+          noResult: "暂无结果",
+          externalEvidence: "外部证据",
+          internalMechanism: "内部机理",
+          noRootResultYet: "当前还没有 {root} 结果。",
+          sampleLabel: "样本",
+          customInput: "自定义输入",
+        },
+      };
+
+      function t(key, vars = {}) {
+        const dict = translations[state.uiLanguage] || translations.en;
+        let value = dict[key] ?? translations.en[key] ?? key;
+        for (const [name, replacement] of Object.entries(vars)) {
+          value = value.replace(`{${name}}`, replacement);
+        }
+        return value;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function applyLanguage() {
+        elements.langEnBtn.classList.toggle("active", state.uiLanguage === "en");
+        elements.langZhBtn.classList.toggle("active", state.uiLanguage === "zh");
+        elements.heroBadge.textContent = t("heroBadge");
+        elements.heroTitle.textContent = t("heroTitle");
+        elements.heroDescription.textContent = t("heroDescription");
+        elements.datasetModeLabel.textContent = t("datasetModeLabel");
+        elements.modelRouteLabel.textContent = t("modelRouteLabel");
+        elements.selectedMethodsLabel.textContent = t("selectedMethodsLabel");
+        elements.workspaceStatusLabel.textContent = t("workspaceStatusLabel");
+        elements.currentSampleLabel.textContent = t("currentSampleLabel");
+        elements.lastActionLabel.textContent = t("lastActionLabel");
+        elements.taskLibraryTitle.textContent = t("taskLibraryTitle");
+        elements.taskLibraryDescription.textContent = t("taskLibraryDescription");
+        elements.configurationTitle.textContent = t("configurationTitle");
+        elements.configurationDescription.textContent = t("configurationDescription");
+        elements.modelTypeFieldLabel.textContent = t("modelTypeFieldLabel");
+        elements.modelPathFieldLabel.textContent = t("modelPathFieldLabel");
+        elements.modelPathInput.placeholder = t("modelPathPlaceholder");
+        elements.methodSelectionLabel.textContent = t("methodSelectionLabel");
+        elements.selectedMethodQueueLabel.textContent = t("selectedMethodQueueLabel");
+        elements.loadModelBtn.textContent = t("loadModelBtn");
+        elements.refreshMethodsBtn.textContent = t("refreshMethodsBtn");
+        elements.sampleWorkspaceTitle.textContent = t("sampleWorkspaceTitle");
+        elements.sampleWorkspaceDescription.textContent = t("sampleWorkspaceDescription");
+        elements.customQuestionLabel.textContent = t("customQuestionLabel");
+        elements.customQuestionInput.placeholder = t("customQuestionPlaceholder");
+        elements.randomBtn.textContent = t("randomBtn");
+        elements.diagnoseBtn.textContent = t("diagnoseBtn");
+        elements.datasetMetaLabel.textContent = t("datasetMetaLabel");
+        elements.groundTruthLabel.textContent = t("groundTruthLabel");
+        elements.availableSamplesLabel.textContent = t("availableSamplesLabel");
+        elements.runMonitorTitle.textContent = t("runMonitorTitle");
+        elements.runMonitorDescription.textContent = t("runMonitorDescription");
+        elements.sessionSummaryLabel.textContent = t("sessionSummaryLabel");
+        elements.liveOutputSnapshotLabel.textContent = t("liveOutputSnapshotLabel");
+        elements.diagnosisBoardTitle.textContent = t("diagnosisBoardTitle");
+        elements.diagnosisBoardDescription.textContent = t("diagnosisBoardDescription");
+        elements.modelOutputLabel.textContent = t("modelOutputLabel");
+      }
+
+      function addTrace(message, strong = "") {
+        const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+        state.trace.unshift({ time, message, strong });
+        state.trace = state.trace.slice(0, 24);
+        renderTrace();
+      }
+
+      function setStatus(label, actionText = "") {
+        state.status = label;
+        elements.statusChip.textContent = label;
+        if (actionText) {
+          elements.statusAction.textContent = actionText;
+        }
+      }
+
+      async function apiGet(url) {
+        const response = await fetch(url, { credentials: "same-origin" });
+        if (!response.ok) {
+          throw new Error("Request failed");
+        }
+        return response.json();
+      }
+
+      async function apiPost(url, payload) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          throw new Error("Request failed");
+        }
+        return response.json();
+      }
+
+      function modelRoute() {
+        if (!state.selectedModelType) {
+          return "";
+        }
+        return state.selectedModelType + "/" + (state.selectedModelPath || "");
+      }
+
+      function flattenFirstLeaf(nodes, trail = []) {
+        for (const node of nodes || []) {
+          const next = trail.concat(node.value);
+          if (!node.children || node.children.length === 0) {
+            return next;
+          }
+          const branch = flattenFirstLeaf(node.children, next);
+          if (branch.length) {
+            return branch;
+          }
+        }
+        return [];
+      }
+
+      function renderTaskShelf() {
+        const cards = [
+          {
+            name: "USEREDITINPUT",
+            title: "Custom Input",
+            des: "",
+          },
+          ...state.datasetList.map((item) => ({ name: item.name, title: item.name, des: item.des || "" })),
+        ];
+
+        elements.taskShelfCount.textContent = cards.length + " tasks";
+        elements.taskGrid.innerHTML = cards
+          .map((item) => {
+            const active =
+              (item.name === "USEREDITINPUT" && state.datasetMode === "USEREDITINPUT") ||
+              (item.name !== "USEREDITINPUT" && state.selectedDataset === item.name);
+            return `
+              <article class="task-card ${active ? "active" : ""}" data-dataset="${escapeHtml(item.name)}">
+                <strong>${escapeHtml(item.title)}</strong>
+                ${item.des ? `<span>${escapeHtml(item.des)}</span>` : ""}
+              </article>
+            `;
+          })
+          .join("");
+
+        elements.taskGrid.querySelectorAll(".task-card").forEach((card) => {
+          card.addEventListener("click", () => {
+            const value = card.dataset.dataset;
+            selectDataset(value);
+          });
+        });
+      }
+
+      function renderModelControls() {
+        elements.modelTypeSelect.innerHTML = state.modelConfigList
+          .map((item) => `<option value="${escapeHtml(item.model_type)}">${escapeHtml(item.model_type)}</option>`)
+          .join("");
+        elements.modelTypeSelect.value = state.selectedModelType || "";
+
+        elements.modelPathOptions.innerHTML = state.modelPathList
+          .map((item) => `<option value="${escapeHtml(item.value)}"></option>`)
+          .join("");
+        elements.modelPathInput.value = state.selectedModelPath || "";
+      }
+
+      function renderMethodTree() {
+        if (!state.selectedDataset && state.datasetMode !== "USEREDITINPUT") {
+          elements.methodTree.innerHTML = `<div class="empty-state">${escapeHtml(t("noTaskSample"))}</div>`;
+        } else if (!state.methodTree.length) {
+          elements.methodTree.innerHTML = `<div class="empty-state">${escapeHtml(t("noMethodsAvailable"))}</div>`;
+        } else {
+          elements.methodTree.innerHTML = state.methodTree.map((node) => renderMethodNode(node, [])).join("");
+          elements.methodTree.querySelectorAll("input[type='checkbox'][data-path]").forEach((checkbox) => {
+            checkbox.addEventListener("change", () => {
+              const path = checkbox.dataset.path.split("|||");
+              toggleMethodSelection(path, checkbox.checked);
+            });
+          });
+        }
+
+        const selected = state.selectedMethods;
+        elements.selectedMethods.innerHTML = selected.length
+          ? selected.map((path) => `<span class="method-pill">${escapeHtml(path[path.length - 1])}</span>`).join("")
+          : `<span class="inline-badge">${escapeHtml(t("noMethodSelected"))}</span>`;
+      }
+
+      function renderMethodNode(node, trail) {
+        const path = trail.concat(node.value);
+        if (!node.children || node.children.length === 0) {
+          const checked = state.selectedMethods.some((item) => JSON.stringify(item) === JSON.stringify(path));
+          return `
+            <label class="method-option">
+              <input type="checkbox" data-path="${escapeHtml(path.join("|||"))}" ${checked ? "checked" : ""} />
+              <span>${escapeHtml(node.label || node.value)}</span>
+            </label>
+          `;
+        }
+        const cls = trail.length === 0 ? "method-group" : "method-branch";
+        return `
+          <details class="${cls}" open>
+            <summary>${escapeHtml(node.label || node.value)}</summary>
+            <div class="method-list">
+              ${node.children.map((child) => renderMethodNode(child, path)).join("")}
+            </div>
+          </details>
+        `;
+      }
+
+      function renderPromptOptions() {
+        if (!state.promptOptions.length) {
+          elements.sampleList.innerHTML = `<div class="empty-state">${escapeHtml(t("noSamplesAvailable"))}</div>`;
+          return;
+        }
+
+        elements.sampleList.innerHTML = state.promptOptions
+          .map((item, index) => {
+            const active = item === state.selectedPrompt;
+            return `
+              <article class="sample-card ${active ? "active" : ""}" data-index="${index}">
+                <strong>${escapeHtml(t("sampleLabel"))} ${index + 1}</strong>
+                <span>${escapeHtml(item)}</span>
+              </article>
+            `;
+          })
+          .join("");
+
+        elements.sampleList.querySelectorAll(".sample-card").forEach((card) => {
+          card.addEventListener("click", () => updateInputObjectFromSelection(card.dataset.index));
+        });
+      }
+
+      function renderWorkspace() {
+        const customMode = state.datasetMode === "USEREDITINPUT";
+        elements.customInputField.classList.toggle("hidden", !customMode);
+        elements.randomBtn.classList.toggle("hidden", customMode);
+        elements.searchBtn.textContent = customMode ? t("searchBtnCustom") : t("searchBtnDataset");
+        elements.customQuestionInput.value = state.customQuestion;
+
+        elements.metaDataset.textContent = state.inputObject.dataset_name || state.selectedDatasetLabel || "Custom Input";
+        elements.metaGroundTruth.textContent = state.inputObject.ground_truth || "-";
+        elements.promptDisplay.textContent =
+          state.selectedPrompt || state.customQuestion || t("noPromptSelected");
+
+        elements.heroDataset.textContent = state.selectedDatasetLabel || t("customInput");
+        elements.heroModel.textContent = modelRoute() || t("notSelected");
+        elements.heroMethods.textContent = String(state.selectedMethods.length);
+        elements.statusSample.textContent = state.selectedPrompt
+          ? state.selectedPrompt.slice(0, 80)
+          : t("noPromptSelectedShort");
+
+        const summaryLines = [
+          "Task: " + (state.selectedDatasetLabel || "Custom Input"),
+          "Mode: " + (customMode ? "Custom Search" : "Dataset Sample"),
+          "Model: " + (modelRoute() || "Not Selected"),
+          "Methods: " + (state.selectedMethods.map((item) => item[item.length - 1]).join(", ") || "None"),
+          "Prompt Count: " + state.promptOptions.length,
+        ];
+        elements.sessionSummary.textContent = summaryLines.join("\n");
+        elements.resultSnapshot.textContent = JSON.stringify(
+          {
+            dataset_name: state.inputObject.dataset_name || state.selectedDatasetLabel || "",
+            ground_truth: state.inputObject.ground_truth || "",
+          },
+          null,
+          2
+        );
+      }
+
+      function renderTrace() {
+        if (!state.trace.length) {
+          elements.traceLog.innerHTML = `<div class="trace-line"><strong>${escapeHtml(state.status || "Ready")}</strong><br/>${escapeHtml(t("workspaceInitialized"))}</div>`;
+          return;
+        }
+        elements.traceLog.innerHTML = state.trace
+          .map(
+            (item) => `
+              <div class="trace-line">
+                <strong>${escapeHtml(item.time)}${item.strong ? " · " + escapeHtml(item.strong) : ""}</strong><br/>
+                ${escapeHtml(item.message)}
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderResults() {
+        const result = state.result || {};
+        elements.modelOutput.textContent = result.result || t("modelOutputPlaceholder");
+
+        const externalData = result.external || result.External || {};
+        const internalData = result.internal || result.Internal || {};
+        const errorsData = result.errors || result.Errors || [];
+        const roots = [];
+        if (Object.keys(externalData).length) {
+          roots.push("External");
+        }
+        if (Object.keys(internalData).length) {
+          roots.push("Internal");
+        }
+        if (errorsData.length) {
+          roots.push("Errors");
+        }
+        if (!roots.length) {
+          elements.resultBadge.textContent = t("noResult");
+          elements.resultContainer.innerHTML = `<div class="empty-state">${escapeHtml(t("diagnosisDetailsPlaceholder"))}</div>`;
+          return;
+        }
+
+        elements.resultBadge.textContent = roots.join(" / ");
+
+        const columns = [
+          { key: "external", label: t("externalEvidence"), data: externalData },
+          { key: "internal", label: t("internalMechanism"), data: internalData },
+        ].map((rootKey) => {
+          const rootData = rootKey.data || {};
+          const categories = Object.keys(rootData);
+          return `
+            <section class="result-column">
+              <h3>${rootKey.label}</h3>
+              ${
+                categories.length
+                  ? categories.map((category) => renderCategoryBlock(category, rootData[category])).join("")
+                  : `<div class="empty-state">${escapeHtml(t("noRootResultYet", { root: rootKey.key }))}</div>`
+              }
+            </section>
+          `;
+        });
+
+        const miscSections = errorsData.length
+          ? [
+              `
+                <section class="result-column">
+                  <h3>Errors</h3>
+                  <div class="method-text">${escapeHtml(JSON.stringify(errorsData, null, 2))}</div>
+                </section>
+              `,
+            ]
+          : [];
+
+        elements.resultContainer.innerHTML = `<div class="result-columns">${columns.join("")}${miscSections.join("")}</div>`;
+      }
+
+      function renderCategoryBlock(category, methods) {
+        const methodNames = Object.keys(methods || {});
+        return `
+          <div class="category-block">
+            <h4>${escapeHtml(category)}</h4>
+            ${methodNames.map((methodName) => renderMethodCard(methodName, methods[methodName])).join("")}
+          </div>
+        `;
+      }
+
+      function renderMethodCard(methodName, payload) {
+        return `
+          <details class="method-card">
+            <summary>${escapeHtml(methodName)}</summary>
+            <div class="method-card-body">
+              ${payload.text ? `<div class="method-text">${escapeHtml(payload.text)}</div>` : ""}
+              ${(payload.echarts || []).length ? renderCharts(payload.echarts) : ""}
+              ${(payload.imgs || []).length ? payload.imgs.map(renderImageBlock).join("") : ""}
+              ${(payload.table || []).length ? payload.table.map(renderTableBlock).join("") : ""}
+            </div>
+          </details>
+        `;
+      }
+
+      function renderImageBlock(item) {
+        return `
+          <div class="img-block">
+            ${item.img_name ? `<div class="chart-title">${escapeHtml(item.img_name)}</div>` : ""}
+            <img src="${item.img_base64}" alt="${escapeHtml(item.img_name || "result image")}" />
+            ${item.des ? `<div class="method-note">${escapeHtml(item.des)}</div>` : ""}
+            ${item.res ? `<div class="method-res">${escapeHtml(item.res)}</div>` : ""}
+          </div>
+        `;
+      }
+
+      function renderTableBlock(item) {
+        const rows = Array.isArray(item.table_list) ? item.table_list : [];
+        const keys = rows.length ? Object.keys(rows[0]) : [];
+        return `
+          <div>
+            ${item.table_name ? `<div class="chart-title">${escapeHtml(item.table_name)}</div>` : ""}
+            <div class="data-table-wrap">
+              <table>
+                <thead>
+                  <tr>${keys.map((key) => `<th>${escapeHtml(key)}</th>`).join("")}</tr>
+                </thead>
+                <tbody>
+                  ${rows
+                    .map(
+                      (row) => `
+                        <tr>
+                          ${keys.map((key) => `<td>${escapeHtml(row[key])}</td>`).join("")}
+                        </tr>
+                      `
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </div>
+            ${item.des ? `<div class="method-note">${escapeHtml(item.des)}</div>` : ""}
+            ${item.res ? `<div class="method-res">${escapeHtml(item.res)}</div>` : ""}
+          </div>
+        `;
+      }
+
+      function renderCharts(charts) {
+        return `<div class="chart-grid">${charts.map(renderChartBlock).join("")}</div>`;
+      }
+
+      function renderChartBlock(item) {
+        const option = item.option || {};
+        const chartTitle = option.title && option.title.text ? option.title.text : "Chart";
+        const plot = buildPlotMarkup(option);
+        return `
+          <div class="chart-block">
+            <div class="chart-title">${escapeHtml(chartTitle)}</div>
+            ${plot}
+            ${item.des ? `<div class="method-note">${escapeHtml(item.des)}</div>` : ""}
+            ${item.res ? `<div class="method-res">${escapeHtml(item.res)}</div>` : ""}
+          </div>
+        `;
+      }
+
+      function buildPlotMarkup(option) {
+        const series = option.series && option.series[0] ? option.series[0] : null;
+        if (!series) {
+          return `<div class="plot-box"><pre>${escapeHtml(JSON.stringify(option, null, 2))}</pre></div>`;
+        }
+        if (series.type === "scatter") {
+          return buildScatterPlot(option, series.data || []);
+        }
+        if (series.type === "heatmap") {
+          return buildHeatmap(option, series.data || []);
+        }
+        return `<div class="plot-box"><pre>${escapeHtml(JSON.stringify(option, null, 2))}</pre></div>`;
+      }
+
+      function buildScatterPlot(option, data) {
+        if (!data.length) {
+          return `<div class="plot-box"></div>`;
+        }
+        const width = 680;
+        const height = 320;
+        const padding = 28;
+        const maxX = Number(option.xAxis && option.xAxis.max) || Math.max(...data.map((item) => Number(item[0]) || 0), 1);
+        const maxY = Number(option.yAxis && option.yAxis.max) || Math.max(...data.map((item) => Number(item[1]) || 0), 1);
+        const values = data.map((item) => Number(item[2]) || 0);
+        const minValue = Math.min(...values);
+        const maxValue = Math.max(...values);
+        const dots = data
+          .slice(-600)
+          .map((item) => {
+            const x = padding + ((Number(item[0]) || 0) / Math.max(maxX, 1)) * (width - padding * 2);
+            const y = height - padding - ((Number(item[1]) || 0) / Math.max(maxY, 1)) * (height - padding * 2);
+            const weight = Number(item[2]) || 0;
+            const ratio = maxValue === minValue ? 0.5 : (weight - minValue) / (maxValue - minValue);
+            const radius = 2 + ratio * 4;
+            const fill = `rgba(40, 93, 87, ${0.3 + ratio * 0.65})`;
+            return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${radius.toFixed(2)}" fill="${fill}">
+              <title>x=${escapeHtml(item[0])}, y=${escapeHtml(item[1])}, value=${escapeHtml(item[2])}</title>
+            </circle>`;
+          })
+          .join("");
+        return `
+          <div class="plot-box">
+            <svg class="plot-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+              <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+              <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="rgba(156,116,72,0.45)" />
+              <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="rgba(156,116,72,0.45)" />
+              ${dots}
+            </svg>
+          </div>
+        `;
+      }
+
+      function buildHeatmap(option, data) {
+        if (!data.length) {
+          return `<div class="plot-box"></div>`;
+        }
+        const xLabels = (option.xAxis && option.xAxis.data) || [];
+        const yLabels = (option.yAxis && option.yAxis.data) || [];
+        const width = Math.min(xLabels.length || 1, 36);
+        const height = Math.min(yLabels.length || 1, 24);
+        const selected = [];
+
+        for (const entry of data) {
+          if (selected.length >= width * height) {
+            break;
+          }
+          if ((Number(entry[0]) || 0) < width && (Number(entry[1]) || 0) < height) {
+            selected.push(entry);
+          }
+        }
+
+        const values = selected.map((item) => Number(item[2]) || 0);
+        const minValue = Math.min(...values);
+        const maxValue = Math.max(...values);
+
+        const cells = selected
+          .map((item) => {
+            const ratio = maxValue === minValue ? 0.5 : ((Number(item[2]) || 0) - minValue) / (maxValue - minValue);
+            const lightness = 92 - ratio * 46;
+            const title = `source=${xLabels[item[0]] || item[0]}, target=${yLabels[item[1]] || item[1]}, value=${item[2]}`;
+            return `<div class="heatmap-cell" style="background:hsl(170, 36%, ${lightness}%);" title="${escapeHtml(title)}"></div>`;
+          })
+          .join("");
+
+        return `
+          <div class="plot-box">
+            <div class="heatmap-grid" style="grid-template-columns: repeat(${width}, 12px);">
+              ${cells}
+            </div>
+          </div>
+        `;
+      }
+
+      function toggleMethodSelection(path, checked) {
+        const key = JSON.stringify(path);
+        const existingIndex = state.selectedMethods.findIndex((item) => JSON.stringify(item) === key);
+        if (checked && existingIndex === -1) {
+          state.selectedMethods.push(path);
+        }
+        if (!checked && existingIndex >= 0) {
+          state.selectedMethods.splice(existingIndex, 1);
+        }
+        renderMethodTree();
+        renderWorkspace();
+      }
+
+      async function initialize() {
+        applyLanguage();
+        addTrace("Fetching datasets and model registry.", "Init");
+        renderTrace();
+        try {
+          const [datasetRes, modelRes] = await Promise.all([apiGet("/getDatasetList"), apiGet("/getModelSecList")]);
+          state.datasetList = datasetRes.data || [];
+          state.modelConfigList = modelRes.data || [];
+          if (state.modelConfigList.length) {
+            state.selectedModelType = state.modelConfigList[0].model_type;
+            state.modelPathList = state.modelConfigList[0].model_list || [];
+            state.selectedModelPath = state.modelPathList.length ? state.modelPathList[0].value : "";
+          }
+          renderTaskShelf();
+          renderModelControls();
+          await selectDataset("USEREDITINPUT");
+          addTrace("Workspace is ready for configuration.", "Ready");
+        } catch (error) {
+          addTrace("Initialization failed.", "Error");
+          setStatus("Init Error", "Failed to fetch initial data");
+        }
+      }
+
+      async function selectDataset(value) {
+        if (value === "USEREDITINPUT") {
+          state.datasetMode = "USEREDITINPUT";
+          state.selectedDataset = "";
+          state.selectedDatasetLabel = "Custom Input";
+          state.inputObject = {};
+          state.promptOptions = [];
+          state.inputObjectList = [];
+          state.selectedPrompt = state.customQuestion;
+          state.methodTree = [];
+          state.selectedMethods = [];
+          renderTaskShelf();
+          renderPromptOptions();
+          renderMethodTree();
+          renderWorkspace();
+          renderResults();
+          addTrace("Switched to custom input mode.", "Dataset");
+          return;
+        }
+
+        state.datasetMode = "SELECT";
+        state.selectedDataset = value;
+        state.selectedDatasetLabel = value;
+        renderTaskShelf();
+        setStatus("Loading", "Fetching dataset samples");
+        addTrace("Loading dataset samples for " + value + ".", "Dataset");
+        try {
+          const response = await apiGet("/getDatasetDataTopnByName?dataset_name=" + encodeURIComponent(value));
+          state.inputObjectList = response.data || [];
+          state.promptOptions = state.inputObjectList.map((item) => item.prompt);
+          state.inputObject = state.inputObjectList[0] || {};
+          state.selectedPrompt = state.inputObject.prompt || "";
+          renderPromptOptions();
+          renderWorkspace();
+          await refreshMethods();
+          setStatus("Ready", "Dataset loaded");
+        } catch (error) {
+          addTrace("Failed to load dataset samples.", "Error");
+          setStatus("Error", "Dataset request failed");
+        }
+      }
+
+      async function refreshMethods() {
+        if (!modelRoute()) {
+          state.methodTree = [];
+          state.selectedMethods = [];
+          renderMethodTree();
+          renderWorkspace();
+          return;
+        }
+
+        const datasetName = state.datasetMode === "USEREDITINPUT"
+          ? (state.inputObject.dataset_name || "")
+          : state.selectedDataset;
+        if (!datasetName) {
+          state.methodTree = [];
+          state.selectedMethods = [];
+          renderMethodTree();
+          renderWorkspace();
+          return;
+        }
+
+        addTrace("Refreshing methods for the current dataset/model pair.", "Methods");
+        try {
+          const response = await apiGet(
+            "/getMethodListByModelName?model_name=" +
+              encodeURIComponent(modelRoute()) +
+              "&dataset_name=" +
+              encodeURIComponent(datasetName)
+          );
+          state.methodTree = response.data || [];
+          const firstLeaf = flattenFirstLeaf(state.methodTree);
+          if (firstLeaf.length) {
+            state.selectedMethods = [firstLeaf];
+          } else {
+            state.selectedMethods = [];
+          }
+          renderMethodTree();
+          renderWorkspace();
+        } catch (error) {
+          state.methodTree = [];
+          state.selectedMethods = [];
+          renderMethodTree();
+          renderWorkspace();
+          addTrace("Failed to refresh method list.", "Error");
+        }
+      }
+
+      async function searchCandidates() {
+        if (!state.customQuestion.trim()) {
+          addTrace("Custom question is empty.", "Notice");
+          return;
+        }
+        setStatus("Searching", "Retrieving similar samples");
+          addTrace("Searching candidates for the custom question.", "Search");
+        try {
+          const response = await apiPost("/searchTopnByInput", { input_text: state.customQuestion });
+          state.inputObjectList = response.data || [];
+          state.promptOptions = state.inputObjectList.map((item) => item.prompt);
+          state.inputObject = state.inputObjectList[0] || {};
+          state.selectedPrompt = state.inputObject.prompt || state.customQuestion;
+          renderPromptOptions();
+          renderWorkspace();
+          await refreshMethods();
+          setStatus("Ready", "Candidates loaded");
+        } catch (error) {
+          addTrace("Candidate search failed.", "Error");
+          setStatus("Error", "Search failed");
+        }
+      }
+
+      async function refreshDatasetSample() {
+        if (state.datasetMode === "USEREDITINPUT") {
+          await searchCandidates();
+          return;
+        }
+        if (!state.selectedDataset) {
+          return;
+        }
+        setStatus("Loading", "Refreshing current dataset samples");
+          addTrace("Refreshing the dataset sample list.", "Sample");
+        try {
+          const response = await apiGet("/getDatasetDataTopnByName?dataset_name=" + encodeURIComponent(state.selectedDataset));
+          state.inputObjectList = response.data || [];
+          state.promptOptions = state.inputObjectList.map((item) => item.prompt);
+          state.inputObject = state.inputObjectList[0] || {};
+          state.selectedPrompt = state.inputObject.prompt || "";
+          renderPromptOptions();
+          renderWorkspace();
+          setStatus("Ready", "Sample list refreshed");
+        } catch (error) {
+          addTrace("Failed to refresh sample list.", "Error");
+          setStatus("Error", "Refresh failed");
+        }
+      }
+
+      async function randomSample() {
+        if (!state.selectedDataset) {
+          addTrace("No dataset selected for random sample.", "Notice");
+          return;
+        }
+        setStatus("Loading", "Fetching random sample");
+        addTrace("Fetching one random dataset sample.", "Sample");
+        try {
+          const response = await apiGet("/getDatasetDataRandom1ByName?dataset_name=" + encodeURIComponent(state.selectedDataset));
+          state.inputObject = response.data || {};
+          state.selectedPrompt = state.inputObject.prompt || "";
+          renderWorkspace();
+          setStatus("Ready", "Random sample ready");
+        } catch (error) {
+          addTrace("Failed to fetch random sample.", "Error");
+          setStatus("Error", "Random sample failed");
+        }
+      }
+
+      async function loadModel() {
+        if (!modelRoute()) {
+          return;
+        }
+        setStatus("Loading", "Loading model");
+        addTrace("Loading model tokenizer cache for " + modelRoute() + ".", "Model");
+        try {
+          await apiGet("/loadModelByName?modelName=" + encodeURIComponent(modelRoute()));
+          setStatus("Ready", "Model loaded");
+          addTrace("Model loaded successfully.", "Model");
+        } catch (error) {
+          setStatus("Error", "Model load failed");
+          addTrace("Model load failed.", "Error");
+        }
+      }
+
+      function updateInputObjectFromSelection(indexValue) {
+        const index = Number(indexValue);
+        if (!Number.isNaN(index) && state.inputObjectList[index]) {
+          state.inputObject = state.inputObjectList[index];
+          state.selectedPrompt = state.inputObject.prompt || "";
+          renderPromptOptions();
+          renderWorkspace();
+          refreshMethods();
+        }
+      }
+
+      async function diagnose() {
+        const promptText = state.selectedPrompt || state.customQuestion;
+        if (!promptText) {
+          addTrace("Prompt is empty.", "Notice");
+          return;
+        }
+        if (!modelRoute()) {
+          addTrace("Model route is empty.", "Notice");
+          return;
+        }
+        if (!state.selectedMethods.length) {
+          addTrace("No method selected.", "Notice");
+          return;
+        }
+
+        const payload = {
+          dataset_name: state.datasetMode === "USEREDITINPUT"
+            ? (state.inputObject.dataset_name || "")
+            : state.selectedDataset,
+          model_name: modelRoute(),
+          method_name: state.selectedMethods,
+          input: state.inputObject && Object.keys(state.inputObject).length
+            ? state.inputObject
+            : { prompt: state.customQuestion, ground_truth: "" },
+        };
+
+        setStatus("Streaming", "Diagnosis in progress");
+        addTrace("Starting streaming diagnosis.", "Diagnose");
+        state.result = {};
+        renderResults();
+
+        try {
+          const response = await fetch("/do_generate_stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              break;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            let boundary = buffer.indexOf("\n\n");
+            while (boundary !== -1) {
+              const chunk = buffer.slice(0, boundary).trim();
+              buffer = buffer.slice(boundary + 2);
+              boundary = buffer.indexOf("\n\n");
+              if (!chunk) {
+                continue;
+              }
+              const decoded = decodeURIComponent(escape(atob(chunk)));
+              if (decoded === "END") {
+                setStatus("Ready", "Diagnosis finished");
+                addTrace("Streaming diagnosis finished.", "Done");
+                break;
+              }
+              try {
+                state.result = JSON.parse(decoded);
+                renderResults();
+              } catch (error) {
+                addTrace("Failed to parse one streamed payload chunk.", "Warning");
+              }
+            }
+          }
+        } catch (error) {
+          setStatus("Error", "Diagnosis failed");
+          addTrace("Diagnosis request failed.", "Error");
+        }
+      }
+
+      elements.modelTypeSelect.addEventListener("change", async (event) => {
+        state.selectedModelType = event.target.value;
+        const config = state.modelConfigList.find((item) => item.model_type === state.selectedModelType);
+        state.modelPathList = config ? config.model_list || [] : [];
+        state.selectedModelPath = state.modelPathList.length ? state.modelPathList[0].value : "";
+        renderModelControls();
+        renderWorkspace();
+        await refreshMethods();
+      });
+
+      elements.modelPathInput.addEventListener("input", async (event) => {
+        state.selectedModelPath = event.target.value;
+        renderWorkspace();
+        await refreshMethods();
+      });
+
+      elements.customQuestionInput.addEventListener("input", (event) => {
+        state.customQuestion = event.target.value;
+        if (state.datasetMode === "USEREDITINPUT") {
+          state.selectedPrompt = state.customQuestion;
+          renderWorkspace();
+        }
+      });
+
+      elements.langEnBtn.addEventListener("click", () => switchLanguage("en"));
+      elements.langZhBtn.addEventListener("click", () => switchLanguage("zh"));
+      elements.searchBtn.addEventListener("click", () => refreshDatasetSample());
+      elements.randomBtn.addEventListener("click", () => randomSample());
+      elements.diagnoseBtn.addEventListener("click", () => diagnose());
+      elements.loadModelBtn.addEventListener("click", () => loadModel());
+      elements.refreshMethodsBtn.addEventListener("click", () => refreshMethods());
+
+      function switchLanguage(lang) {
+        if (state.uiLanguage === lang) {
+          return;
+        }
+        state.uiLanguage = lang;
+        applyLanguage();
+        renderTaskShelf();
+        renderMethodTree();
+        renderPromptOptions();
+        renderWorkspace();
+        renderResults();
+        renderTrace();
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>
