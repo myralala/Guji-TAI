@@ -44,10 +44,11 @@
 
 ## 📂 Supported Models
 
-- `Qwen/Qwen3-8B`
-- `Qwen/Qwen3-32B`
-- `Xunzi/Xunzi-Qwen3-8B`
-- `internlm/internlm3-8b-instruct`
+- `Qwen3-8B`
+- `Qwen3-32B`
+- `Xunzi-Qwen3-8B`
+- `Internlm3-8b-instruct`
+- `Other models`
 
 Model path mapping can be configured in `models/model2path.json`.
 
